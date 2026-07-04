@@ -85,6 +85,14 @@ ler3/
 ├── exportar.html
 └── importar.html
 
+## Implementações futuras
+
+- **Etiquetagem com QR Code** — geração de etiquetas físicas vinculadas ao inventário para localização rápida dos itens no laboratório
+- **Acesso mobile e web** — tornar o sistema acessível via navegador no celular ou como aplicação instalável
+- **Integração com Google Forms** — membros da UTFPR poderiam submeter pedidos de conserto via formulário, com aprovação ou recusa pelo responsável do LER³ e registro automático no inventário
+- **Acesso em rede** — disponibilizar o sistema para múltiplos usuários simultâneos pela rede interna da universidade
+
 ## Projeto de extensão
-Desenvolvido por Thiago — Engenharia Elétrica UTFPR  
+
+Desenvolvido por Thiago — Engenharia Elétrica UTFPR
 Projeto de extensão LER³ — Ponta Grossa, 2025
