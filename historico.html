@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Histórico — LER³</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f0f4f8; }
+        .topbar {
+            background: linear-gradient(135deg, #00BFFF, #0090cc);
+            padding: 14px 24px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+        .topbar h1 { color: white; font-size: 1.5rem; margin: 0; font-weight: bold; }
+        .table thead { background-color: #1a1a2e; color: white; }
+    </style>
+</head>
+<body>
+
+    <div class="topbar d-flex align-items-center justify-content-between">
+        <h1>⚗ Laboratório LER³</h1>
+        <a href="/" class="btn btn-outline-light">← Voltar ao inventário</a>
+    </div>
+
+    <div class="container-fluid p-4">
+        <h4 class="mb-1 fw-bold">Histórico de exclusões</h4>
+        <p class="text-muted mb-3">Registro de todos os itens que foram removidos do inventário.</p>
+
+        {% if registros %}
+        <div class="table-responsive">
+            <table class="table table-hover table-bordered bg-white shadow-sm">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Categoria</th>
+                        <th>Subcategoria</th>
+                        <th>Condição</th>
+                        <th>Quantidade</th>
+                        <th>Pat. UTFPR</th>
+                        <th>Pat. Escola</th>
+                        <th>Motivo</th>
+                        <th>Data exclusão</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in registros %}
+                    <tr>
+                        <td>{{ r.nome_item }}</td>
+                        <td>{{ r.categoria }}</td>
+                        <td>{{ r.subcategoria }}</td>
+                        <td>{{ r.condicao | replace('_', ' ') }}</td>
+                        <td>{{ r.quantidade }} {{ r.unidade }}</td>
+                        <td>{{ 'Sim' if r.patrimonio_utfpr else 'Não' }}</td>
+                        <td>
+                            {% if r.patrimonio_escola %}
+                                <span class="badge bg-info text-dark">{{ r.nome_escola or 'Sim' }}</span>
+                            {% else %}
+                                Não
+                            {% endif %}
+                        </td>
+                        <td>{{ r.motivo or '—' }}</td>
+                        <td>{{ r.data_exclusao.strftime('%d/%m/%Y %H:%M') }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+            <div class="alert alert-secondary">Nenhum item excluído ainda.</div>
+        {% endif %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

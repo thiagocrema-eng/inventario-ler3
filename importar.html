@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Importar Dados — LER³</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f0f4f8; }
+        .topbar {
+            background: linear-gradient(135deg, #00BFFF, #0090cc);
+            padding: 14px 24px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+        .topbar h1 { color: white; font-size: 1.5rem; margin: 0; font-weight: bold; }
+        .card-header-dark { background-color: #1a1a2e; color: white; }
+        .btn-ler { background-color: #00BFFF; color: #000; font-weight: bold; }
+        .btn-ler:hover { background-color: #0090cc; color: white; }
+    </style>
+</head>
+<body>
+
+    <div class="topbar d-flex align-items-center justify-content-between">
+        <h1>⚗ Laboratório LER³</h1>
+        <a href="/" class="btn btn-outline-light">← Voltar ao inventário</a>
+    </div>
+
+    <div class="container mt-4" style="max-width: 600px;">
+        <div class="card shadow-sm">
+            <div class="card-header card-header-dark">
+                <strong>⬆ Importar dados do CSV</strong>
+            </div>
+            <div class="card-body">
+
+                <div class="alert alert-info mb-4">
+                    <strong>Antes de importar:</strong> certifique-se de que as categorias e subcategorias
+                    que aparecem no CSV já estão cadastradas no sistema. Itens com categorias não encontradas
+                    serão importados sem categoria.
+                </div>
+
+                <form action="/importar" method="POST" enctype="multipart/form-data">
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Selecione o arquivo CSV</label>
+                        <input type="file" name="arquivo_csv" class="form-control" accept=".csv" required>
+                        <div class="form-text">Use o arquivo exportado pelo próprio sistema para garantir compatibilidade.</div>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <strong>Atenção:</strong> os itens do CSV serão adicionados ao banco atual.
+                        Se já existirem itens cadastrados, eles não serão removidos — apenas os novos serão inseridos.
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-3">
+                        <a href="/" class="btn btn-secondary">Cancelar</a>
+                        <button type="submit" class="btn btn-ler">Importar dados</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

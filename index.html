@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>LER³ — Inventário</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f0f4f8; }
+        .topbar {
+            background: linear-gradient(135deg, #00BFFF, #0090cc);
+            padding: 14px 24px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+        .topbar h1 { color: white; font-size: 1.5rem; margin: 0; font-weight: bold; }
+        .sidebar {
+            min-height: 100vh;
+            background-color: #1a1a2e;
+            padding: 20px 0;
+            width: 230px;
+            min-width: 230px;
+        }
+        .sidebar .sidebar-title {
+            color: #00BFFF;
+            font-weight: bold;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 8px 20px 4px;
+        }
+        .sidebar a.nav-link {
+            color: #b0bec5;
+            padding: 7px 20px;
+            font-size: 0.92rem;
+            border-left: 3px solid transparent;
+            transition: all 0.2s;
+        }
+        .sidebar a.nav-link:hover {
+            color: #ffffff;
+            background-color: rgba(0,191,255,0.1);
+            border-left: 3px solid #00BFFF;
+        }
+        .sidebar a.nav-link.active {
+            color: #00BFFF;
+            border-left: 3px solid #00BFFF;
+            background-color: rgba(0,191,255,0.08);
+        }
+        .sidebar .accordion-button {
+            background-color: transparent;
+            color: #b0bec5;
+            font-size: 0.92rem;
+            padding: 7px 20px;
+            border: none;
+            border-left: 3px solid transparent;
+            box-shadow: none;
+            transition: all 0.2s;
+        }
+        .sidebar .accordion-button:not(.collapsed) {
+            color: #00BFFF;
+            background-color: rgba(0,191,255,0.08);
+            border-left: 3px solid #00BFFF;
+        }
+        .sidebar .accordion-button:hover {
+            color: #ffffff;
+            background-color: rgba(0,191,255,0.1);
+            border-left: 3px solid #00BFFF;
+        }
+        .sidebar .accordion-button::after { filter: invert(1); }
+        .sidebar .accordion-body { background-color: transparent; padding: 4px 0; }
+        .sidebar .accordion-item { background-color: transparent; border: none; }
+        .sidebar .sub-link {
+            color: #78909c;
+            display: block;
+            padding: 5px 20px 5px 36px;
+            font-size: 0.87rem;
+            text-decoration: none;
+            border-left: 3px solid transparent;
+            transition: all 0.2s;
+        }
+        .sidebar .sub-link:hover { color: #ffffff; background-color: rgba(0,191,255,0.08); }
+        .sidebar .sub-link.active { color: #00BFFF; }
+        .badge-funcionando      { background-color: #198754; }
+        .badge-nao_funcionando  { background-color: #dc3545; }
+        .badge-em_manutencao    { background-color: #ffc107; color: #000; }
+        .badge-condicao_variada { background-color: #6f42c1; }
+        .badge-sem_status       { background-color: #adb5bd; color: #000; }
+        .badge-disponivel       { background-color: #00BFFF; color: #000; }
+        .badge-em_uso           { background-color: #6c757d; }
+        .table thead { background-color: #1a1a2e; color: white; }
+        .etiqueta-badge {
+            background-color: #1a1a2e;
+            color: #00BFFF;
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-family: monospace;
+            border: 1px solid #00BFFF;
+        }
+        .item-link {
+            color: #1a1a2e;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .item-link:hover {
+            color: #0090cc;
+            text-decoration: underline;
+        }
+        .subitem-indicator {
+            font-size: 0.7rem;
+            color: #00BFFF;
+            border: 1px solid #00BFFF;
+            border-radius: 4px;
+            padding: 1px 5px;
+            margin-left: 6px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="topbar d-flex align-items-center justify-content-between">
+        <h1>⚗ Laboratório LER³</h1>
+        <form action="/buscar" method="GET" class="d-flex gap-2">
+            <input type="text" name="q" placeholder="Buscar item..." class="form-control" style="width: 280px;">
+            <button type="submit" class="btn btn-light fw-bold">Buscar</button>
+        </form>
+        <div class="d-flex gap-2">
+            <a href="/cadastrar" class="btn btn-warning fw-bold">+ Cadastrar item</a>
+            <a href="/exportar/pagina" class="btn btn-success fw-bold">⬇ Baixar planilha</a>
+            <a href="/historico" class="btn btn-outline-light">🕓 Histórico</a>
+            <a href="/gerenciar" class="btn btn-outline-light">⚙ Categorias</a>
+            <a href="/importar" class="btn btn-outline-light">⬆ Importar</a>
+        </div>
+    </div>
+
+    <div class="d-flex">
+        <div class="sidebar">
+            <div class="sidebar-title">Navegação</div>
+            <a href="/" class="nav-link {% if not categoria_atual %}active{% endif %}">Todos os itens</a>
+
+            <div class="sidebar-title mt-3">Categorias</div>
+            <div class="accordion accordion-flush" id="sidebarAccordion">
+                {% for categoria in categorias %}
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <button class="accordion-button {% if not categoria_atual or categoria_atual.id != categoria.id %}collapsed{% endif %}"
+                                type="button" data-bs-toggle="collapse" data-bs-target="#cat{{ categoria.id }}">
+                            {{ categoria.nome }}
+                        </button>
+                    </div>
+                    <div id="cat{{ categoria.id }}"
+                         class="accordion-collapse collapse {% if categoria_atual and categoria_atual.id == categoria.id %}show{% endif %}"
+                         data-bs-parent="#sidebarAccordion">
+                        <div class="accordion-body">
+                            <a href="/categoria/{{ categoria.id }}" class="sub-link">— Todos</a>
+                            {% for sub in categoria.subcategorias %}
+                                <a href="/categoria/{{ categoria.id }}?subcategoria_id={{ sub.id }}"
+                                   class="sub-link {% if subcategoria_id_atual == sub.id %}active{% endif %}">
+                                    → {{ sub.nome }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="flex-grow-1 p-4">
+            <h4 class="mb-3 fw-bold">
+                {% if categoria_atual %}{{ categoria_atual.nome }}
+                {% else %}Todos os itens{% endif %}
+            </h4>
+
+            {% if itens %}
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered bg-white shadow-sm">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Categoria</th>
+                            <th>Subcategoria</th>
+                            <th>Condição</th>
+                            <th>Disponibilidade</th>
+                            <th>Quantidade</th>
+                            <th>Etiqueta</th>
+                            <th>Pat. UTFPR</th>
+                            <th>Pat. Escola</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in itens %}
+                        <tr>
+                            <td>
+                                <a href="/item/{{ item.id }}" class="item-link">{{ item.nome }}</a>
+                                {% if item.subitens %}
+                                    <span class="subitem-indicator">{{ item.subitens|length }} itens</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ item.categoria.nome if item.categoria else '—' }}</td>
+                            <td>{{ item.subcategoria.nome if item.subcategoria else '—' }}</td>
+                            <td>
+                                <span class="badge badge-{{ item.condicao }}">
+                                    {{ item.condicao | replace('_', ' ') }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge badge-{{ item.disponibilidade }}">
+                                    {{ item.disponibilidade | replace('_', ' ') }}
+                                </span>
+                            </td>
+                            <td>{{ item.quantidade }} {{ item.unidade_medida }}</td>
+                            <td>
+                                {% if item.localizacao and item.localizacao.codigo_etiqueta %}
+                                    <span class="etiqueta-badge">{{ item.localizacao.codigo_etiqueta }}</span>
+                                {% else %}
+                                    <span class="text-muted small">—</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ 'Sim' if item.patrimonio_utfpr else 'Não' }}</td>
+                            <td>
+                                {% if item.patrimonio_escola %}
+                                    <span class="badge bg-info text-dark">{{ item.nome_escola or 'Sim' }}</span>
+                                {% else %}
+                                    Não
+                                {% endif %}
+                            </td>
+                            <td class="d-flex gap-1">
+                                <a href="/editar/{{ item.id }}" class="btn btn-sm btn-primary">Editar</a>
+                                <button type="button" class="btn btn-sm btn-danger"
+                                        onclick="confirmarExclusao({{ item.id }}, '{{ item.nome }}')">
+                                    Excluir
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+                <div class="alert alert-secondary">Nenhum item encontrado.</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Modal de exclusão com motivo -->
+    <div class="modal fade" id="modalExclusao" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color:#1a1a2e;">
+                    <h5 class="modal-title text-white">Confirmar exclusão</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <form method="POST" id="formExclusao">
+                    <div class="modal-body">
+                        <p>Excluir o item <strong id="nomeItemModal"></strong>?</p>
+                        <p class="text-muted small">Este registro será movido para o histórico de exclusões.</p>
+                        <label class="form-label">Motivo da exclusão (opcional)</label>
+                        <input type="text" name="motivo" class="form-control" placeholder="ex: Descarte, Doação, Perda...">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger">Confirmar exclusão</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function confirmarExclusao(id, nome) {
+            document.getElementById('nomeItemModal').textContent = nome;
+            document.getElementById('formExclusao').action = '/item/deletar/' + id;
+            new bootstrap.Modal(document.getElementById('modalExclusao')).show();
+        }
+    </script>
+</body>
+</html>
