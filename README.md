@@ -1,16 +1,35 @@
-# inventario-ler3
- Sistema de inventário e gestão de equipamentos eletrônicos do laboratório LER³ — UTFPR
 # Inventário LER³
 
 Sistema web de inventário e gestão de equipamentos eletrônicos desenvolvido para o laboratório **LER³ (Laboratório de Eletrônica Reutilizável e Reciclagem)** da UTFPR — Campus Ponta Grossa.
+
+Desenvolvido como projeto da disciplina de Computação — Engenharia Elétrica UTFPR.
+
+---
+
+## Interface
+
+### Tela principal
+![Tela principal](tela-principal.png)
+
+### Cadastro de item
+![Cadastro](cadastro.png)
+
+### Detalhe do item
+![Detalhe](detalhe.png)
+
+### Exportação de dados
+![Exportar](exportar.png)
+
+---
 
 ## Sobre o projeto
 
 O LER³ recebe equipamentos eletrônicos descartados, realiza triagem e reaproveitamento em projetos educacionais. Este sistema foi desenvolvido para organizar e tornar acessível o acervo do laboratório, resolvendo o problema de materiais sem registro e difíceis de localizar.
 
-Desenvolvido como projeto da disciplina de Computação — Engenharia Elétrica UTFPR.
+---
 
 ## Funcionalidades
+
 - Cadastro, edição e exclusão de itens
 - Categorias e subcategorias gerenciáveis pela interface
 - Cinco condições: Funcionando, Não funcionando, Em manutenção, Condição variada, Sem status
@@ -26,13 +45,20 @@ Desenvolvido como projeto da disciplina de Computação — Engenharia Elétrica
 - Exportação CSV por inventário completo, categoria ou condição
 - Importação de dados via CSV
 
+---
+
 ## Tecnologias utilizadas
-- Python 3
-- Flask
-- SQLAlchemy
-- SQLite
-- Bootstrap 5
-- Jinja2
+
+| Tecnologia | Função |
+|---|---|
+| Python 3 | Linguagem principal do backend |
+| Flask | Framework web para rotas e servidor local |
+| SQLAlchemy | ORM para comunicação com o banco de dados |
+| SQLite | Banco de dados em arquivo único |
+| Bootstrap 5 | Interface visual responsiva |
+| Jinja2 | Motor de templates HTML |
+
+---
 
 ## Como executar
 
